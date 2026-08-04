@@ -66,12 +66,31 @@
   }
   .tip.show{display:block}
   /* Balance pager */
+  .pager-wrap{position:relative}
   .pager{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none}
   .pager::-webkit-scrollbar{display:none}
+  .pager.dragging{cursor:grabbing;scroll-snap-type:none;scroll-behavior:auto}
   .page{flex:0 0 100%;scroll-snap-align:start;min-width:100%}
+  .pnav{
+    position:absolute;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;
+    background:rgba(27,33,39,.9);border:1px solid var(--line);color:var(--muted);
+    display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;
+    opacity:0;transition:opacity .18s;z-index:5;pointer-events:none
+  }
+  .pnav.prev{left:-6px}.pnav.next{right:-6px}
+  @media (hover:hover){ .pager-wrap:hover .pnav.avail{opacity:1;pointer-events:auto} }
   .dots{display:flex;gap:6px;margin-top:12px}
   .dots span{width:6px;height:6px;border-radius:3px;background:#2b333b;cursor:pointer;transition:all .2s}
   .dots span.on{background:var(--text);width:16px}
+  .info-i{
+    display:inline-flex;width:15px;height:15px;border:1px solid var(--dim);border-radius:50%;
+    font-size:9.5px;font-style:normal;color:var(--muted);align-items:center;justify-content:center;
+    margin-left:5px;cursor:pointer;vertical-align:1px
+  }
+  .brk-row{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:1px solid var(--line)}
+  .brk-row:last-of-type{border-bottom:none}
+  .brk-row .r{text-align:right}
+  .brk-total{display:flex;align-items:center;justify-content:space-between;padding:14px 2px 2px;font-weight:600}
   /* Asset breakdown chips */
   .chips{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
   .chipa{
@@ -250,34 +269,37 @@
       </div>
     </div>
     <div class="scroll">
-      <div class="pager" id="balPager">
-        <div class="page">
-          <div class="lbl">Total Portfolio</div>
-          <div class="big" onclick="toggleTip()">174,560 USD</div>
-          <div class="delta"><span class="up">+6,260 USD</span> <span class="up">+3.8%</span><span class="dim">Past month</span></div>
+      <div class="pager-wrap">
+        <div class="pager" id="balPager">
+          <div class="page">
+            <div class="lbl">Total Portfolio <span class="info-i" onclick="show('sh-info')">i</span></div>
+            <div class="big">174,560 USD</div>
+            <div class="delta"><span class="up">+6,260 USD</span> <span class="up">+3.8%</span><span class="dim">Past month</span></div>
+          </div>
+          <div class="page">
+            <div class="lbl">Bitcoin</div>
+            <div class="big" onclick="showAssets()">1.40700000 BTC</div>
+            <div class="delta"><span class="dim" style="margin-left:0">168,840 USD · across your 3 wallets</span></div>
+          </div>
+          <div class="page">
+            <div class="lbl">Cash</div>
+            <div class="big" onclick="go('cash')">4,520.00 USD</div>
+            <div class="delta"><span class="dim" style="margin-left:0">Outside your wallets</span></div>
+          </div>
         </div>
-        <div class="page">
-          <div class="lbl">Bitcoin</div>
-          <div class="big" onclick="showAssets()">1.40700000 BTC</div>
-          <div class="delta"><span class="dim" style="margin-left:0">168,840 USD · across your 3 wallets</span></div>
-        </div>
-        <div class="page">
-          <div class="lbl">Cash</div>
-          <div class="big" onclick="go('cash')">4,520.00 USD</div>
-          <div class="delta"><span class="dim" style="margin-left:0">Outside your wallets</span></div>
-        </div>
+        <div class="pnav prev" id="pnavPrev">‹</div>
+        <div class="pnav next" id="pnavNext">›</div>
       </div>
       <div class="dots" id="balDots"><span class="on"></span><span></span><span></span></div>
-      <div class="tip" id="totalTip">Bitcoin across all layers + Liquid assets across your 3 wallets, plus cash. Nothing is counted twice.</div>
 
       <div class="chart">
         <svg viewBox="0 0 360 120" fill="none">
           <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#00c3ff" stop-opacity=".25"/><stop offset="1" stop-color="#00c3ff" stop-opacity="0"/>
           </linearGradient></defs>
-          <path d="M0 95 C25 88 40 78 60 80 C80 82 95 90 115 84 C140 76 150 58 175 52 C200 46 210 55 235 48 C260 41 270 28 300 22 C325 17 345 14 358 8" stroke="#00c3ff" stroke-width="2.2"/>
-          <path d="M0 95 C25 88 40 78 60 80 C80 82 95 90 115 84 C140 76 150 58 175 52 C200 46 210 55 235 48 C260 41 270 28 300 22 C325 17 345 14 358 8 L358 120 L0 120 Z" fill="url(#g1)"/>
-          <circle cx="358" cy="8" r="4" fill="#00c3ff"/>
+          <path id="chartLine" d="M0 95 C25 88 40 78 60 80 C80 82 95 90 115 84 C140 76 150 58 175 52 C200 46 210 55 235 48 C260 41 270 28 300 22 C325 17 345 14 358 8" stroke="#00c3ff" stroke-width="2.2"/>
+          <path id="chartFill" d="M0 95 C25 88 40 78 60 80 C80 82 95 90 115 84 C140 76 150 58 175 52 C200 46 210 55 235 48 C260 41 270 28 300 22 C325 17 345 14 358 8 L358 120 L0 120 Z" fill="url(#g1)"/>
+          <circle id="chartDot" cx="358" cy="8" r="4" fill="#00c3ff"/>
         </svg>
         <div class="axis"><span>May 18</span><span>May 25</span><span>Jun 1</span><span>Jun 8</span><span>Jun 15</span></div>
       </div>
@@ -466,6 +488,27 @@
     </div>
   </div>
 
+  <!-- Portfolio breakdown sheet -->
+  <div class="sheet" id="sh-info">
+    <div class="grab"></div>
+    <h2>What's in your total</h2>
+    <div class="brk-row">
+      <div style="display:flex;align-items:center;gap:10px"><div class="coin b" style="width:30px;height:30px;font-size:13px">₿</div><div><div class="aname">Bitcoin</div><div class="asub">Across your 3 wallets · on-chain + Lightning + Liquid</div></div></div>
+      <div class="r"><div class="aname">1.40700000 BTC</div><div class="asub">168,840 USD</div></div>
+    </div>
+    <div class="brk-row">
+      <div style="display:flex;align-items:center;gap:10px"><div class="coin t" style="width:30px;height:30px;font-size:13px">T</div><div><div class="aname">Tether USD</div><div class="asub">In Spending</div></div></div>
+      <div class="r"><div class="aname">1,200 USDT</div><div class="asub">1,200 USD</div></div>
+    </div>
+    <div class="brk-row">
+      <div style="display:flex;align-items:center;gap:10px"><div class="coin c" style="width:30px;height:30px;font-size:13px">$</div><div><div class="aname">Cash</div><div class="asub">Outside your wallets</div></div></div>
+      <div class="r"><div class="aname">4,520.00 USD</div></div>
+    </div>
+    <div class="brk-total"><span>Total Portfolio</span><span>174,560 USD</span></div>
+    <div class="note">Nothing is counted twice — cash and Liquid assets sit alongside your bitcoin, not inside its total.</div>
+    <button class="cta" onclick="closeSheets()">Got it</button>
+  </div>
+
   <!-- Success sheet -->
   <div class="sheet" id="sh-success">
     <div class="grab"></div>
@@ -594,7 +637,6 @@
   function closeSheets(){ closeSheetEls(); document.getElementById('overlay').classList.remove('show'); }
 
   /* ---- Probes & moderator ---- */
-  function toggleTip(){ document.getElementById('totalTip').classList.toggle('show'); }
   var toastTimer;
   function dead(what){
     var t = document.getElementById('toast');
@@ -620,39 +662,70 @@
   /* ---- Balance pager ---- */
   var pager = document.getElementById('balPager');
   var balDots = document.querySelectorAll('#balDots span');
-  pager.addEventListener('scroll', function(){
-    var i = Math.round(pager.scrollLeft / pager.clientWidth);
-    balDots.forEach(function(d,j){ d.classList.toggle('on', j===i); });
-  });
-  balDots.forEach(function(d,i){
-    d.addEventListener('click', function(){ pager.scrollTo({left: i*pager.clientWidth, behavior:'smooth'}); });
-  });
+  var pnavPrev = document.getElementById('pnavPrev');
+  var pnavNext = document.getElementById('pnavNext');
+  var curPage = 0;
 
-  /* Mouse drag-to-swipe (desktop). Touch devices swipe natively. */
-  var drag = {down:false, moved:false, startX:0, startLeft:0};
-  pager.addEventListener('mousedown', function(e){
-    drag.down = true; drag.moved = false;
-    drag.startX = e.pageX; drag.startLeft = pager.scrollLeft;
-    pager.style.scrollSnapType = 'none';   /* free movement while dragging */
-    pager.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', function(e){
-    if(!drag.down) return;
-    var dx = e.pageX - drag.startX;
-    if(Math.abs(dx) > 5) drag.moved = true;
-    pager.scrollLeft = drag.startLeft - dx;
-  });
-  window.addEventListener('mouseup', function(){
-    if(!drag.down) return;
-    drag.down = false;
-    pager.style.cursor = '';
-    /* snap to nearest page */
-    var i = Math.round(pager.scrollLeft / pager.clientWidth);
+  /* per-page chart data: total portfolio / bitcoin / cash */
+  var CHARTS = [
+    { line:'M0 95 C25 88 40 78 60 80 C80 82 95 90 115 84 C140 76 150 58 175 52 C200 46 210 55 235 48 C260 41 270 28 300 22 C325 17 345 14 358 8', endY:8 },
+    { line:'M0 92 C22 90 38 74 62 78 C86 82 100 62 128 58 C155 54 168 66 195 56 C225 45 245 50 275 34 C305 20 335 18 358 12', endY:12 },
+    { line:'M0 62 L70 62 L70 54 L150 54 L150 58 L225 58 L225 44 L300 44 L300 40 L358 40', endY:40 }
+  ];
+  function setChart(i){
+    var c = CHARTS[i];
+    document.getElementById('chartLine').setAttribute('d', c.line);
+    document.getElementById('chartFill').setAttribute('d', c.line + ' L358 120 L0 120 Z');
+    document.getElementById('chartDot').setAttribute('cy', c.endY);
+  }
+  function setPageUI(i){
+    curPage = i;
+    balDots.forEach(function(d,j){ d.classList.toggle('on', j===i); });
+    pnavPrev.classList.toggle('avail', i > 0);
+    pnavNext.classList.toggle('avail', i < balDots.length - 1);
+    setChart(i);
+  }
+  function goPage(i){
     i = Math.max(0, Math.min(balDots.length - 1, i));
     pager.scrollTo({left: i * pager.clientWidth, behavior:'smooth'});
-    setTimeout(function(){ pager.style.scrollSnapType = ''; }, 350);
+  }
+  pager.addEventListener('scroll', function(){
+    var i = Math.round(pager.scrollLeft / pager.clientWidth);
+    if(i !== curPage && i >= 0 && i < balDots.length) setPageUI(i);
   });
+  balDots.forEach(function(d,i){ d.addEventListener('click', function(){ goPage(i); }); });
+  pnavPrev.addEventListener('click', function(){ goPage(curPage - 1); });
+  pnavNext.addEventListener('click', function(){ goPage(curPage + 1); });
+  setPageUI(0);
+
+  /* Mouse drag-to-swipe with pointer capture — release always registers,
+     even off-element. Touch devices swipe natively and are left alone. */
+  var drag = {on:false, moved:false, startX:0, startLeft:0};
+  pager.addEventListener('pointerdown', function(e){
+    if(e.pointerType !== 'mouse') return;
+    drag.on = true; drag.moved = false;
+    drag.startX = e.clientX; drag.startLeft = pager.scrollLeft;
+    pager.setPointerCapture(e.pointerId);
+    pager.classList.add('dragging');
+  });
+  pager.addEventListener('pointermove', function(e){
+    if(!drag.on) return;
+    var dx = e.clientX - drag.startX;
+    if(Math.abs(dx) > 4) drag.moved = true;
+    pager.scrollLeft = drag.startLeft - dx;
+  });
+  function endDrag(e){
+    if(!drag.on) return;
+    drag.on = false;
+    pager.classList.remove('dragging');
+    var dx = e.clientX - drag.startX;
+    var i = curPage;
+    if(dx < -40) i = curPage + 1;        /* dragged left → next */
+    else if(dx > 40) i = curPage - 1;    /* dragged right → prev */
+    goPage(i);
+  }
+  pager.addEventListener('pointerup', endDrag);
+  pager.addEventListener('pointercancel', endDrag);
   /* a real drag shouldn't fire the page's tap actions */
   pager.addEventListener('click', function(e){
     if(drag.moved){ e.stopPropagation(); e.preventDefault(); drag.moved = false; }
