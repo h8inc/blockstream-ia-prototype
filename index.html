@@ -135,6 +135,12 @@
     padding:14px 14px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer
   }
   .row .l{display:flex;align-items:center;gap:10px}
+  .wcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px 12px;margin-top:8px;cursor:pointer}
+  .wtop{display:flex;justify-content:space-between;align-items:center}
+  .combar{display:flex;height:5px;border-radius:3px;overflow:hidden;margin-top:11px;gap:2px}
+  .combar i{border-radius:3px;min-width:4px}
+  .legend{display:flex;gap:14px;margin-top:8px;font-size:10.5px;color:var(--muted);flex-wrap:wrap}
+  .legend b{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
   .wmark{width:4px;height:34px;border-radius:2px;background:var(--accent)}
   .wname{font-weight:600;font-size:15px}
   .wdev{color:var(--dim);font-size:11px;margin-left:6px}
@@ -325,26 +331,33 @@
 
       <!-- By wallet -->
       <div id="listWallets">
-        <div class="row" onclick="go('wallet-spending')">
-          <div class="l"><div class="wmark"></div><div><span class="wname">Spending</span><span class="wdev">📱</span><div class="wsub">0.065 BTC · 1,200 USDT</div></div></div>
-          <div class="r-amt"><div class="aw">9,000 USD</div></div>
+        <div class="wcard" onclick="go('wallet-spending')">
+          <div class="wtop"><div><span class="wname">Spending</span><span class="wdev">📱</span></div><div class="aw">9,000 USD</div></div>
+          <div class="combar"><i style="flex:667;background:var(--orange)"></i><i style="flex:200;background:#ffd54f"></i><i style="flex:133;background:var(--teal)"></i></div>
+          <div class="legend"><span><b style="background:var(--orange)"></b>0.05 On-chain</span><span><b style="background:#ffd54f"></b>0.015 Lightning</span><span><b style="background:var(--teal)"></b>1,200 USDT</span></div>
         </div>
-        <div class="row" onclick="go('wallet-savings')">
-          <div class="l"><div class="wmark"></div><div><span class="wname">Savings</span><span class="wdev">🔒</span><div class="wsub">0.5 BTC</div></div></div>
-          <div class="r-amt"><div class="aw">60,000 USD</div></div>
+        <div class="wcard" onclick="go('wallet-savings')">
+          <div class="wtop"><div><span class="wname">Savings</span><span class="wdev">🔒</span></div><div class="aw">60,000 USD</div></div>
+          <div class="combar"><i style="flex:1;background:var(--orange)"></i></div>
+          <div class="legend"><span><b style="background:var(--orange)"></b>0.5 On-chain</span></div>
         </div>
-        <div class="row" onclick="go('wallet-vault')">
-          <div class="l"><div class="wmark"></div><div><span class="wname">Vault</span><span class="wdev">📱🔒☁︎</span><div class="wsub">0.842 BTC</div></div></div>
-          <div class="r-amt"><div class="aw">101,040 USD</div></div>
+        <div class="wcard" onclick="go('wallet-vault')">
+          <div class="wtop"><div><span class="wname">Vault</span><span class="wdev">📱🔒☁︎</span></div><div class="aw">101,040 USD</div></div>
+          <div class="combar"><i style="flex:1;background:var(--orange)"></i></div>
+          <div class="legend"><span><b style="background:var(--orange)"></b>0.842 On-chain</span></div>
         </div>
         <div class="row" style="justify-content:center;color:var(--muted);font-weight:500" onclick="dead('Set up a new wallet')">＋ &nbsp;Set Up a New Wallet</div>
       </div>
 
       <!-- By asset -->
       <div id="listAssets" style="display:none">
-        <div class="row" onclick="dead('Bitcoin across wallets — detail view')">
-          <div class="l"><div class="coin b">₿</div><div><div class="aname">Bitcoin</div><div class="asub">Across 3 wallets · on-chain + Lightning + Liquid</div></div></div>
-          <div class="r-amt"><div class="a">1.40700000 BTC</div><div class="u">168,840 USD</div></div>
+        <div class="wcard" onclick="dead('Bitcoin across wallets — detail view')">
+          <div class="wtop">
+            <div style="display:flex;align-items:center;gap:10px"><div class="coin b" style="width:28px;height:28px;font-size:12px">₿</div><span class="wname">Bitcoin</span></div>
+            <div class="r-amt"><div class="a">1.40700000 BTC</div><div class="u">168,840 USD</div></div>
+          </div>
+          <div class="combar"><i style="flex:989;background:var(--orange)"></i><i style="flex:11;background:#ffd54f"></i></div>
+          <div class="legend"><span><b style="background:var(--orange)"></b>1.392 On-chain</span><span><b style="background:#ffd54f"></b>0.015 Lightning</span></div>
         </div>
         <div class="row" onclick="go('wallet-spending')">
           <div class="l"><div class="coin t">T</div><div><div class="aname">Tether USD</div><div class="asub">In Spending</div></div></div>
