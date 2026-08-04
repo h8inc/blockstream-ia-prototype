@@ -316,6 +316,12 @@
         <div class="act" onclick="dead('Global Receive')"><span class="ic">↙</span>Receive</div>
       </div>
 
+      <!-- Bitcoin price — below actions, above cash -->
+      <div class="row" onclick="go('price')">
+        <div class="l"><div class="coin b" style="opacity:.8">₿</div><div><div class="aname">Bitcoin Price</div><div class="asub">BTC / USD</div></div></div>
+        <div class="r-amt"><div class="aw">120,000.00 USD</div><div class="u" style="color:var(--green)">+0.85% today</div></div>
+      </div>
+
       <div class="row" onclick="go('cash')">
         <div class="l"><div class="coin c">$</div><div><div class="aname">Cash</div><div class="asub">Global · outside your wallets</div></div></div>
         <div class="r-amt"><div class="aw">4,520.00 USD</div></div>
@@ -369,11 +375,6 @@
         </div>
       </div>
 
-      <!-- Bitcoin price — bottom of page per aligned hierarchy -->
-      <div class="row" style="margin-top:16px" onclick="go('price')">
-        <div class="l"><div class="coin b" style="opacity:.8">₿</div><div><div class="aname">Bitcoin Price</div><div class="asub">BTC / USD</div></div></div>
-        <div class="r-amt"><div class="aw">120,000.00 USD</div><div class="u" style="color:var(--green)">+0.85% today</div></div>
-      </div>
     </div>
   </div>
 
