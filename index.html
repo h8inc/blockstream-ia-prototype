@@ -277,13 +277,13 @@
             <div class="delta"><span class="up">+6,260 USD</span> <span class="up">+3.8%</span><span class="dim">Past month</span></div>
           </div>
           <div class="page">
-            <div class="lbl">Bitcoin</div>
-            <div class="big" onclick="showAssets()">1.40700000 BTC</div>
+            <div class="lbl">Bitcoin <span class="info-i" onclick="show('sh-info-btc')">i</span></div>
+            <div class="big">1.40700000 BTC</div>
             <div class="delta"><span class="dim" style="margin-left:0">168,840 USD · across your 3 wallets</span></div>
           </div>
           <div class="page">
-            <div class="lbl">Cash</div>
-            <div class="big" onclick="go('cash')">4,520.00 USD</div>
+            <div class="lbl">Cash <span class="info-i" onclick="show('sh-info-cash')">i</span></div>
+            <div class="big">4,520.00 USD</div>
             <div class="delta"><span class="dim" style="margin-left:0">Outside your wallets</span></div>
           </div>
         </div>
@@ -509,6 +509,39 @@
     <button class="cta" onclick="closeSheets()">Got it</button>
   </div>
 
+  <!-- Bitcoin breakdown sheet -->
+  <div class="sheet" id="sh-info-btc">
+    <div class="grab"></div>
+    <h2>Your bitcoin</h2>
+    <div class="brk-row">
+      <div><div class="aname">Spending 📱</div><div class="asub">On-chain + Lightning</div></div>
+      <div class="r"><div class="aname">0.06500000 BTC</div><div class="asub">7,800 USD</div></div>
+    </div>
+    <div class="brk-row">
+      <div><div class="aname">Savings 🔒</div><div class="asub">On-chain · keys on Jade</div></div>
+      <div class="r"><div class="aname">0.50000000 BTC</div><div class="asub">60,000 USD</div></div>
+    </div>
+    <div class="brk-row">
+      <div><div class="aname">Vault 📱🔒☁︎</div><div class="asub">Multisig 2-of-3</div></div>
+      <div class="r"><div class="aname">0.84200000 BTC</div><div class="asub">101,040 USD</div></div>
+    </div>
+    <div class="brk-total"><span>Total bitcoin</span><span>1.40700000 BTC</span></div>
+    <div class="note">Bitcoin only — Tether and cash are counted separately in your Total Portfolio.</div>
+    <button class="cta" onclick="closeSheets();showAssets()">View all assets</button>
+  </div>
+
+  <!-- Cash info sheet -->
+  <div class="sheet" id="sh-info-cash">
+    <div class="grab"></div>
+    <h2>Your cash</h2>
+    <div class="brk-row">
+      <div><div class="aname">Cash balance</div><div class="asub">US dollars · global, outside your wallets</div></div>
+      <div class="r"><div class="aname">4,520.00 USD</div></div>
+    </div>
+    <div class="note" style="margin-top:10px">Cash counts toward your Total Portfolio but never sits inside a wallet. Use it to buy bitcoin directly into wallets you've linked.</div>
+    <button class="cta" onclick="closeSheets();go('cash')">Open Cash</button>
+  </div>
+
   <!-- Success sheet -->
   <div class="sheet" id="sh-success">
     <div class="grab"></div>
@@ -705,14 +738,18 @@
     if(e.pointerType !== 'mouse') return;
     drag.on = true; drag.moved = false;
     drag.startX = e.clientX; drag.startLeft = pager.scrollLeft;
-    pager.setPointerCapture(e.pointerId);
-    pager.classList.add('dragging');
+    /* NOTE: capture starts only after real movement — capturing on
+       pointerdown would swallow plain clicks on children (the ⓘ icons). */
   });
   pager.addEventListener('pointermove', function(e){
     if(!drag.on) return;
     var dx = e.clientX - drag.startX;
-    if(Math.abs(dx) > 4) drag.moved = true;
-    pager.scrollLeft = drag.startLeft - dx;
+    if(!drag.moved && Math.abs(dx) > 4){
+      drag.moved = true;
+      pager.setPointerCapture(e.pointerId);
+      pager.classList.add('dragging');
+    }
+    if(drag.moved) pager.scrollLeft = drag.startLeft - dx;
   });
   function endDrag(e){
     if(!drag.on) return;
