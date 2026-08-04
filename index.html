@@ -310,13 +310,9 @@
         <div class="act" onclick="dead('Global Receive')"><span class="ic">↙</span>Receive</div>
       </div>
 
-      <div class="card tappable" onclick="go('cash')">
-        <div class="card-top"><span class="lbl" style="margin:0">Cash</span><span class="chev">›</span></div>
-        <div class="cash-amt">4,520.00 USD</div>
-        <div class="btn-row">
-          <div class="btn" onclick="event.stopPropagation();dead('Add money to cash')">＋ Add Money</div>
-          <div class="btn" onclick="event.stopPropagation();dead('Withdraw cash')">↑ Withdraw</div>
-        </div>
+      <div class="row" onclick="go('cash')">
+        <div class="l"><div class="coin c">$</div><div><div class="aname">Cash</div><div class="asub">Global · outside your wallets</div></div></div>
+        <div class="r-amt"><div class="aw">4,520.00 USD</div></div>
       </div>
 
       <div class="sec">
